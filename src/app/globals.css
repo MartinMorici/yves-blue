@@ -8,5 +8,30 @@
 
 .tabla{
   border-collapse: separate; /* Utiliza separación de celdas en lugar de colapso */
-  border-spacing: 10px; /* Espacio entre celdas */
+  border-spacing: 10px;
+}
+
+.flecha::after{
+  content:'▼';
+  position: absolute;
+  right: 0;
+  font-size: 8px;
+  top: 50%;
+  opacity: 0;
+  transform: translateY(-50%);
+  transition: opacity 0.2s;
+}
+.flechaActiva::after{
+  content:'▼';
+  position: absolute;
+  right: 0;
+  font-size: 8px;
+  top: 50%;
+  opacity: 1;
+  transform: translateY(-50%);
+}
+
+
+.flecha:hover::after {
+  opacity: 1; 
 }
