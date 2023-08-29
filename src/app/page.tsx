@@ -16,17 +16,24 @@ export interface ImpactAssessmentData {
 }
 
 export default function Home() {
-  const [sort, setSort] = useState<keyof ImpactAssessmentData>('Company Name');
-  const [orderedData, setOrderedData] = useState<ImpactAssessmentData[]>(DATA);
-  const isInitialRender = useRef(true);
+  const [sort, setSort] = useState<keyof ImpactAssessmentData>();
+  const [orderedData, setOrderedData] = useState<ImpactAssessmentData[]>(DATA.slice(0, 10));
+  const [page, setPage] = useState<number>(1);
 
-  useEffect(() => {
-    //Prevenir que el useEffect se ejecute en el primer render
-    if (isInitialRender.current) {
-      isInitialRender.current = false;
+  const handlePrev = () => {
+    if (page - 1 === 0) {
       return;
     }
+    setPage(page - 1);
+  };
+  const handleNext = () => {
+    if (page + 1 > Math.ceil(DATA.length / 10)) {
+      return;
+    }
+    setPage(page + 1);
+  };
 
+  useEffect(() => {
     // Función para eliminar caracteres no numéricos y convertir a número
     const cleanAndParse = (value: string | number) => {
       if (typeof value === 'string') {
@@ -43,8 +50,8 @@ export default function Home() {
       if (sort === 'Company Name') {
         return a[sort].localeCompare(b[sort]);
       } else {
-        const valueA = cleanAndParse(a[sort]);
-        const valueB = cleanAndParse(b[sort]);
+        const valueA = cleanAndParse(a[sort!]);
+        const valueB = cleanAndParse(b[sort!]);
 
         if (valueA < valueB) {
           return 1;
@@ -57,9 +64,9 @@ export default function Home() {
     };
 
     // Ordenar los datos en función de la columna seleccionada
-    const sortedData = [...orderedData].sort(compareFunction);
-    setOrderedData(sortedData);
-  }, [sort]);
+    const sortedData = [...DATA].sort(compareFunction);
+    setOrderedData(sortedData.slice(10 * page - 10, 10 * page));
+  }, [sort, page]);
 
   return (
     <main>
@@ -114,12 +121,11 @@ export default function Home() {
         </thead>
         <tbody>
           {orderedData.map((data, index) => {
-            const porcentaje = Math.round(data['ESG Score'])
+            const porcentaje = Math.round(data['ESG Score']);
             const divStyle = {
               width: `${porcentaje}%`,
-              backgroundColor: `rgb(93, 143, 214, 0.${porcentaje} )`
+              backgroundColor: `rgb(93, 143, 214, 0.${porcentaje} )`,
             };
-            
             return (
               <tr key={`${data['Company Name']}-${index}`}>
                 <td className='px-3'>{data['Company Name']}</td>
@@ -142,6 +148,17 @@ export default function Home() {
           })}
         </tbody>
       </table>
+      <div className='flex justify-center items-center mt-8 gap-4'>
+        <button className='px-4 py-2 bg-white text-black rounded-md' onClick={() => handlePrev()}>
+          PREV
+        </button>
+        <span className='flex gap-2'>
+          PAGE <span className=' px-2 border-b'>{page}</span>
+        </span>
+        <button className='px-4 py-2 bg-white text-black rounded-md' onClick={() => handleNext()}>
+          NEXT
+        </button>
+      </div>
     </main>
   );
 }
