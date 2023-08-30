@@ -11,6 +11,12 @@
   border-spacing: 10px;
 }
 
+
+
+td{
+  white-space: nowrap;
+}
+
 .flecha::after{
   content:'▼';
   position: absolute;
